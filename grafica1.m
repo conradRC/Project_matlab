@@ -22,7 +22,7 @@ function varargout = grafica1(varargin)
 
 % Edit the above text to modify the response to help grafica1
 
-% Last Modified by GUIDE v2.5 18-Sep-2019 15:46:57
+% Last Modified by GUIDE v2.5 26-Sep-2019 09:57:57
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -81,7 +81,7 @@ function input_amp_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of input_amp as text
 %        str2double(get(hObject,'String')) returns contents of input_amp as a double
-
+boton_Callback(hObject, eventdata, handles)
 
 % --- Executes during object creation, after setting all properties.
 function input_amp_CreateFcn(hObject, eventdata, handles)
@@ -95,8 +95,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-
 function input_frecuencia_Callback(hObject, eventdata, handles)
 % hObject    handle to input_frecuencia (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -104,6 +102,8 @@ function input_frecuencia_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of input_frecuencia as text
 %        str2double(get(hObject,'String')) returns contents of input_frecuencia as a double
+
+boton_Callback(hObject, eventdata, handles)
 
 
 % --- Executes during object creation, after setting all properties.
@@ -119,19 +119,18 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
-function input_fase_Callback(hObject, eventdata, handles)
-% hObject    handle to input_fase (see GCBO)
+function inputFase_Callback(hObject, eventdata, handles)
+% hObject    handle to inputFase (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of input_fase as text
-%        str2double(get(hObject,'String')) returns contents of input_fase as a double
-
+% Hints: get(hObject,'String') returns contents of inputFase as text
+%        str2double(get(hObject,'String')) returns contents of inputFase as a double
+boton_Callback(hObject, eventdata, handles)
 
 % --- Executes during object creation, after setting all properties.
-function input_fase_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to input_fase (see GCBO)
+function inputFase_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to inputFase (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -146,23 +145,43 @@ function boton_Callback(hObject, eventdata, handles)
 % hObject    handle to boton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+frecuencia = str2num(get(handles.input_frecuencia,'String')); %Recibe la entrada de Frecuencia
+amplitud = str2num(get(handles.input_amp,'String'));          %Recibe la entrada de Amplitud
+fase = str2num(get(handles.inputFase,'String'));          %Recibe la entrada de Fase
+angle = degtorad(fase);%convert radianes
+%frecuencia = floor(2+(20)*rand(1,1));%Frecuencia aleaotrio
+%amplitud = floor(2+(25)*rand(1,1));%Aplitud aleatorio
+%fase = floor(50+(359)*rand(1,1));%Parte entera y número aleatorio
+%angle = degtorad(fase);%convert radianes
 
-frecuencia = get(handles.input_frecuencia,'String');
-amplitud = get(handles.input_amp,'String');
-amplitud   = str2num(amplitud);
-frecuencia = str2num(frecuencia);
-r = floor(1+(359)*rand(1,1));
-angle = degtorad(r);
+if isempty(frecuencia) || isempty(amplitud) || isempty(angle) || isempty(frecuencia) && isempty(amplitud) || isempty(amplitud) && isempty(angle) || isempty(amplitud) && isempty(frecuencia)
+
+else
+%Conversion a enteros
+
 T = 1/ 10000;
 t1 = 0:T:1;
 t2 = 1:T:2;
+
+%separar onda real e imaginaria
+x = [1 1];
+y = [-1*amplitud amplitud];
+
+
 senal1 = amplitud* sin(2*pi*frecuencia*t1);
 senal2 = amplitud*sin((2*pi*frecuencia*t2)+angle);
+
 hold on;
 cla
-plot(t1,senal1);
 
-xlabel('Periodo');
-ylabel('Amplitud');
+ylabel(handles.axes1,'Amplitud')
+xlabel(handles.axes1,'Frecuencia')
+
+plot(t1,senal1);
 plot(t2,senal2);
-xline(0.5);
+
+linea=line (x,y);
+linea.Marker ='.';
+linea.LineWidth = 1;
+linea.Color = 'b';
+end
